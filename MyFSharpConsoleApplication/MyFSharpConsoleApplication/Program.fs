@@ -4,6 +4,7 @@
 open System
 
 module MyModule = 
+    open System.Net
     
     let number = 1
 
@@ -25,6 +26,13 @@ module MyModule =
         | first::rest ->
             let smaller, larger = List.partition((>=) first) rest
             List.concat [quicksort smaller; [first]; quicksort larger]
+
+    let fetchUrl callback url = 
+        let req = WebRequest.Create(Uri(url))
+        use resp = req.GetResponse()
+        use stream = resp.GetResponseStream()
+        use reader = new IO.StreamReader(stream)
+        callback reader url
 
 open MyModule
 
@@ -56,6 +64,14 @@ let main argv =
     |> printfn "%d"
 
     printfn "%A" (MyModule.quicksort [1;5;23;9;7;3;88;16])
+
+    let myCallback (reader:IO.StreamReader) url =
+        let html = reader.ReadToEnd()
+        let html1000 = html.Substring(0, 10000)
+        let ignore = printfn "Downloaded %s, First 1000 is %s" url html1000
+        html
+    
+    let baidu = fetchUrl myCallback "http://www.baidu.com"
 
     let r = Console.Read()
 
