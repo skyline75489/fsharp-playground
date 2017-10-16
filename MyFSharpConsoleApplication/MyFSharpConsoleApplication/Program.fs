@@ -20,6 +20,14 @@ module MyModule =
         | Worker of Person
         | Manager of Employee list
 
+    let rec quicksort = function
+        | [] -> []
+        | first::rest ->
+            let smaller, larger = List.partition((>=) first) rest
+            List.concat [quicksort smaller; [first]; quicksort larger]
+
+open MyModule
+
 [<EntryPoint>]
 let main argv = 
 
@@ -34,11 +42,21 @@ let main argv =
         | Some i -> printf("11")
         | None -> printf("123")
 
-    let r = Console.Read()
-
     let x = true
     let y = not x
 
     let t = MyModule.DegreesC 85.5
+
+    let sumOfSqureasF n = 
+        [1..n]
+        |> List.map square
+        |> List.sum
+
+    sumOfSqureasF 15
+    |> printfn "%d"
+
+    printfn "%A" (MyModule.quicksort [1;5;23;9;7;3;88;16])
+
+    let r = Console.Read()
 
     0 // 返回整数退出代码
